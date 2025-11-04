@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>スクリーン清掃</title>
+  <link rel="stylesheet" href="static/style.css">
+  <style>
+    /* screen.html 固有のスタイル（style.cssに記述されていない部品や上書きが必要な部分のみ） */
+    #complete-save-btn {
+      display: block;
+      width: 80%;
+      margin: 2em auto 1em;
+      padding: 15px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 8px;
+      background: #007bff; 
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #complete-save-btn:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body class="p-3">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h1>SCREEN <span id="screen-id-title">...</span></h1>
+      <div>
+        <a class="btn btn-outline-secondary" href="index.html">← スクリーン一覧</a>
+      </div>
+    </div>
+
+    <p id="save-status" style="text-align: center; color: green; font-weight: bold;"></p>
+    
+    <div id="date-input-container" class="mb-3">
+        <label class="form-label">清掃対象の日付</label>
+        <input id="date-input" type="date" class="form-control" value="">
+    </div>
+
+    <div id="current-showing" class="showing-block p-4">
+      <h2>清掃記録の新規入力</h2>
+      </div>
+
+    <button id="complete-save-btn">✅ 清掃記録を完了・保存</button>
+
+  </div>
+
+  <script>
+    // 1. URLからスクリーンIDを取得 (e.g., screen.html?id=5)
+    const urlParams = new URLSearchParams(window.location.search);
+    const screenId = urlParams.get('id'); // "5"
+    
+    // 2. タイトルとbodyクラスをセット
+    document.title = `SCREEN ${screenId}`;
+    document.getElementById('screen-id-title').innerText = screenId;
+    document.body.classList.add(`body-screen-${screenId}`);
+
+    // 3. 今日の日付をセット
+    document.getElementById('date-input').value = new Date().toISOString().split('T')[0];
+
+    // 4. script.js が必要とするグローバル変数を定義
+    let SEAT_STRUCTURE = {};
+    let WHEELCHAIR_SEATS = {};
+
+    // 5. 必要なレイアウトJSONを読み込む
+    fetch(`screen_layouts/${screenId}.json`)
+      .then(res => res.json())
+      .then(layoutData => {
+        // 6. グローバル変数にセット
+        SEAT_STRUCTURE = layoutData.seat_structure;
+        WHEELCHAIR_SEATS = layoutData.wheelchair_seats;
+
+        // 7. レイアウト読み込み完了後、メインのスクリプトを実行
+        const script = document.createElement('script');
+        script.src = 'static/script.js';
+        document.body.appendChild(script);
+      })
+      .catch(err => {
+        console.error('座席レイアウトの読み込みに失敗しました:', err);
+        alert('座席レイアウトの読み込みに失敗しました。');
+      });
+  </script>
+  </body>
+</html>

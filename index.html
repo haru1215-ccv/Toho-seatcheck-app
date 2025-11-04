@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>スクリーン一覧</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#7ab8ff"/>
+  <link rel="stylesheet" href="static/style.css">
+  </head>
+<body>
+  <h1>スクリーン一覧</h1>
+  <div class="screen-grid">
+    <a href="screen.html?id=1" class="screen-card">SCREEN 1</a>
+    <a href="screen.html?id=2" class="screen-card">SCREEN 2</a>
+    <a href="screen.html?id=3" class="screen-card">SCREEN 3</a>
+    <a href="screen.html?id=4" class="screen-card">SCREEN 4</a>
+    <a href="screen.html?id=5" class="screen-card">SCREEN 5</a>
+    <a href="screen.html?id=6" class="screen-card">SCREEN 6</a>
+    <a href="screen.html?id=7" class="screen-card">SCREEN 7</a>
+    <a href="screen.html?id=8" class="screen-card">SCREEN 8</a>
+    <a href="screen.html?id=9" class="screen-card">SCREEN 9</a>
+    <a href="screen.html?id=10" class="screen-card">SCREEN 10</a>
+    </div>
+  <div class="bottom-link">
+    <a href="records.html">日別記録を見る</a>
+    </div>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('Service Worker registered.', reg))
+          .catch(err => console.error('Service Worker registration failed.', err));
+      });
+    }
+  </script>
+  </body>
+</html>

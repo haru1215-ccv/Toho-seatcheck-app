@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>日別履歴</title>
+  <link rel="stylesheet" href="static/style.css">
+  <style>
+    /* records.html 専用スタイル (ダークテーマ対応) */
+    body .container { width: 95%; margin: 20px auto; }
+    .list-group-item {
+        position: relative; display: block; padding: .75rem 1.25rem;
+        background-color: #555; color: #eee; border: 1px solid #777;
+        margin-bottom: -1px;
+    }
+    .list-group-item:first-child { border-top-left-radius: .25rem; border-top-right-radius: .25rem; }
+    .list-group-item:last-child { border-bottom-left-radius: .25rem; border-bottom-right-radius: .25rem; }
+    .list-group-item-action:hover { background-color: #666; }
+    .list-group-item.active { background-color: #7ab8ff; border-color: #7ab8ff; color: #333; }
+    .showing-record { border: 1px solid #555; border-left: 5px solid #7ab8ff; background: #4a4a4a; }
+    .row-details-list { padding-left: 1.5em; list-style-type: none; }
+    .row-details-list li { margin-bottom: 3px; }
+    .btn-outline-danger { color: #dc3545; border-color: #dc3545; }
+    .btn-outline-danger:hover { color: #fff; background-color: #dc3545; border-color: #dc3545; }
+    .btn-sm { padding: .25rem .5rem; font-size: .875rem; border-radius: .2rem; }
+  </style>
+</head>
+<body class="p-3">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1>日別履歴</h1>
+      
+      <div style="display: flex; gap: 10px;">
+        <button id="print-btn" class="btn btn-outline-secondary" onclick="window.print()">🖨️ 印刷する</button>
+        <a class="btn btn-outline-secondary" href="index.html">← ホーム</a>
+        </div>
+    </div>
+
+    <div class="d-flex" style="gap: 20px;">
+      <div style="flex-basis: 250px;" id="dates-list-container"> 
+        <div class="list-group" id="dates-list">
+          </div>
+      </div>
+      <div style="flex-grow: 1;">
+         <div id="day-detail" class="p-3 border rounded">日付を選択してください。</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- グローバル変数 ---
+    let activeDateEl = null;   
+
+    //--- ▼▼▼ iPadストレージ (localStorage) ヘルパー ▼▼▼ ---
+    const DB_KEY = "myCleaningAppDatabase";
+    const getDatabase = () => JSON.parse(localStorage.getItem(DB_KEY) || "{}");
+    const saveDatabase = (db) => localStorage.setItem(DB_KEY, JSON.stringify(db));
+    //--- ▲▲▲ iPadストレージ (localStorage) ヘルパー ▲▲▲ ---
+
+    // --- データのレンダリング関数 ---
+    function renderShowingRecord(show, idx, screenId, dateStr) {
+        const overallCleaner = show.cleaner || '（全体担当なし）';
+        const times = (show.times || []).join(' / ') || '時間未設定';
+        const overallRemark = show.overallRemark || '';
+        
+        // ★ 編集ボタンのURLを静的HTML用に変更
+        const editUrl = `screen.html?id=${screenId}&date=${dateStr}&showing_id=${show.id}`;
+        
+        let rowDetailsHtml = '';
+        let isOverallCleaned = false; 
+
+        if (show.rows) {
+            Object.keys(show.rows).sort().forEach(rowKey => {
+                const rowData = show.rows[rowKey];
+                const rowCleaner = rowData.rowCleaner || '—';
+                rowDetailsHtml += `<li><strong>${rowKey}列</strong>: 担当 ${rowCleaner}</li>`;
+                if (rowData.seats && rowData.seats.some(Boolean)) isOverallCleaned = true; 
+            });
+        }
+        
+        const overallStatusHtml = isOverallCleaned ? '<p class="mb-2"><strong>ステータス: ✅ 清掃記録あり</strong></p>' : '';
+        const overallRemarkHtml = overallRemark ? `<p class="mb-1 small"><strong>全体備考:</strong> ${overallRemark}</p>` : '';
+
+        return `
+            <div class="showing-record mb-3 p-3">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h4 class="mb-1">上映 ${idx}: ${show.title || '（作品名なし）'}</h4>
+                    <div>
+                        <a href="${editUrl}" class="btn btn-sm btn-outline-primary edit-showing-btn" style="margin-right: 5px;">編集</a>
+                        <button class="btn btn-sm btn-outline-danger delete-showing-btn" data-date-str="${dateStr}" data-screen-id="${screenId}" data-showing-id="${show.id}">削除</button>
+                    </div>
+                </div>
+                <p class="mb-1 small text-muted">時間: ${times} | 全体担当: ${overallCleaner}</p>
+                ${overallRemarkHtml} ${overallStatusHtml}
+                <ul class="row-details-list">${rowDetailsHtml}</ul>
+            </div>
+        `;
+    }
+
+    // --- メインのデータロード関数 (localStorage版) ---
+    function loadDay(dateStr, element) {
+        document.getElementById('day-detail').innerHTML = '読み込み中...';
+        
+        if (activeDateEl) activeDateEl.classList.remove('active');
+        element.classList.add('active');
+        activeDateEl = element; 
+
+        try {
+            const db = getDatabase();
+            let html = `<h2>${dateStr} の清掃記録</h2>`;
+            let screenCount = 0;
+            
+            // "2025-11-04_5" のようなキーをソート
+            const sortedScreenKeys = Object.keys(db)
+                .filter(key => key.startsWith(dateStr + "_"))
+                .sort((a, b) => {
+                    const idA = parseInt(a.split('_')[1], 10);
+                    const idB = parseInt(b.split('_')[1], 10);
+                    return idA - idB;
+                });
+            
+            sortedScreenKeys.forEach(key => {
+                const screenId = key.split('_')[1];
+                const showings = db[key] || [];
+                
+                if (showings.length > 0) {
+                    screenCount++;
+                    html += `<hr><h3 class="mt-4">SCREEN ${screenId}</h3>`;
+                    html += `<div class="screen-records">`;
+
+                    showings.sort((a, b) => {
+                        const timeA = (a.times && a.times.length) ? a.times[0] : 'ZZZZ';
+                        const timeB = (b.times && b.times.length) ? b.times[0] : 'ZZZZ'; 
+                        return timeA.localeCompare(timeB);
+                    }).forEach((show, idx) => {
+                        html += renderShowingRecord(show, idx + 1, screenId, dateStr);
+                    });
+                    
+                    html += `</div>`;
+                }
+            });
+
+            if (screenCount === 0) {
+                html = `<h2>${dateStr} の清掃記録</h2><p>この日は清掃記録がありません。</p>`;
+            }
+
+            document.getElementById('day-detail').innerHTML = html;
+        } catch (e) {
+            console.error(e);
+            document.getElementById('day-detail').innerHTML = `データの取得中に予期せぬエラーが発生しました。`;
+        }
+    }
+
+    // --- ページ初期ロード (日付リストの読み込み) ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const db = getDatabase();
+        const datesSet = new Set();
+        Object.keys(db).forEach(key => {
+            const date = key.split('_')[0];
+            datesSet.add(date);
+        });
+
+        const sortedDates = Array.from(datesSet).sort().reverse();
+        const datesListEl = document.getElementById('dates-list');
+
+        if (sortedDates.length === 0) {
+            datesListEl.innerHTML = '<p class="text-muted p-3">保存された記録がありません。</p>';
+        } else {
+            sortedDates.forEach(d => {
+                const btn = document.createElement('button');
+                btn.className = "list-group-item list-group-item-action";
+                btn.innerText = d;
+                btn.onclick = () => loadDay(d, btn);
+                datesListEl.appendChild(btn);
+            });
+        }
+    });
+
+    // --- 削除ボタンのイベントリスナー (localStorage版) ---
+    document.getElementById('day-detail').addEventListener('click', (e) => {
+        if (!e.target.classList.contains('delete-showing-btn')) return;
+        if (!confirm('この上映記録を削除してもよろしいですか？')) return;
+
+        const btn = e.target;
+        const screenId = btn.dataset.screenId;
+        const showingId = btn.dataset.showingId;
+        const dateStr = btn.dataset.dateStr;
+        const key = `${dateStr}_${screenId}`;
+        
+        try {
+            const db = getDatabase();
+            if (!db[key]) {
+                alert('削除対象のデータが見つかりませんでした。');
+                return;
+            }
+
+            const showings = db[key];
+            const newShowings = showings.filter(s => s.id !== showingId);
+            
+            if (newShowings.length === 0) {
+                // この日のこのスクリーンの記録が0件になったらキーごと削除
+                delete db[key];
+            } else {
+                db[key] = newShowings;
+            }
+            
+            saveDatabase(db);
+            
+            // ★ 削除成功後、同じ日を再読み込み
+            loadDay(dateStr, activeDateEl);
+
+        } catch (err) {
+            console.error('削除処理に失敗:', err);
+            alert('削除に失敗しました。');
+            loadDay(dateStr, activeDateEl); 
+        }
+    });
+  </script>
+</body>
+</html>

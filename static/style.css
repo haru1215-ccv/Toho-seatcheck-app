@@ -1,0 +1,463 @@
+/* style.css*/
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+
+body {
+  font-family: "Noto Sans JP", sans-serif;
+  margin: 0; /* マージンをリセット */
+  background: #222; /* 全体背景を暗く */
+  color: #eee; /* 文字色を明るく */
+  display: flex; /* flexboxでコンテンツを中央寄せ */
+  flex-direction: column;
+  min-height: 100vh; /* 画面いっぱいの高さ */
+  align-items: center; /* 水平中央寄せ */
+}
+
+h1 {
+  text-align: center;
+  margin: 1em 0;
+  color: #fff; /* タイトル色を白に */
+  font-size: 2.5em; /* タイトルを大きく */
+  letter-spacing: 2px;
+}
+
+/* --- ホーム画面 (index.html) のスタイル --- */
+.screen-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1em;
+  margin: 2em auto;
+  max-width: 800px;
+  width: 90%; /* レスポンシブ対応 */
+}
+
+.screen-card {
+  display: block;
+  background: #333; /* カード背景を暗く */
+  border: 1px solid #555;
+  border-radius: 10px;
+  padding: 1em;
+  text-align: center;
+  font-size: 1.2em;
+  text-decoration: none;
+  color: #eee; /* カード文字色を明るく */
+  transition: 0.2s;
+}
+
+.screen-card:hover {
+  background: #444;
+}
+
+/* --- 共通/ユーティリティ スタイル --- */
+.container { 
+  max-width: 1400px; 
+  margin: 20px auto; 
+  padding: 0 15px; 
+  background: #333; /* コンテナ背景を暗く */
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  padding-bottom: 30px; /* 下部に余白 */
+}
+.d-flex { display: flex; }
+.justify-content-between { justify-content: space-between; }
+.align-items-center { align-items: center; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.mt-2 { margin-top: 0.5rem; }
+.d-block { display: block; }
+.showing-block { 
+  border: 1px solid #555; 
+  border-radius: 8px; 
+  padding: 20px; 
+  background: #444; /* 上映ブロックの背景を暗く */
+  color: #eee;
+}
+hr { border-top: 1px solid #555; margin: 1.5rem 0; }
+
+.bottom-link, .back-link {
+  display: block;
+  text-align: center;
+  margin-top: 2em;
+  text-decoration: none;
+  color: #7ab8ff; /* リンク色を調整 */
+}
+.record-list {
+  max-width: 500px;
+  margin: auto;
+  list-style: none;
+  padding: 0;
+}
+.record-list li {
+  padding: 8px;
+  border-bottom: 1px solid #555;
+}
+.row-details-list { padding-left: 1.5em; list-style-type: none; }
+.row-details-list li { margin-bottom: 3px; }
+
+/* --- screen.html の調整 --- */
+#date-input-container {
+    max-width: 400px; 
+    margin-left: auto;
+    margin-right: auto;
+    color: #eee; /* フォームラベルの色 */
+}
+#date-input {
+    width: 100%;
+    background: #555;
+    border-color: #777;
+    color: #eee;
+}
+
+#form-fields-container {
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 50px; 
+    padding: 1rem;
+    color: #eee;
+}
+
+
+/* --- フォームとボタンの基本スタイル (Bootstrap風) --- */
+.btn {
+  display: inline-block;
+  font-weight: 400;
+  color: #eee; /* ボタン文字色を明るく */
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  background-color: transparent;
+  border: 1px solid transparent;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: .25rem;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.btn-outline-secondary { color: #aaa; border-color: #aaa; }
+.btn-outline-secondary:hover { color: #fff; background-color: #aaa; border-color: #aaa; }
+.btn-outline-primary { color: #7ab8ff; border-color: #7ab8ff; }
+.btn-outline-primary:hover { color: #fff; background-color: #7ab8ff; border-color: #7ab8ff; }
+.btn-sm { padding: .25rem .5rem; font-size: .875rem; border-radius: .2rem; }
+.form-control, .form-control-sm {
+    display: block;
+    width: 100%;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #eee; /* 入力文字色 */
+    background-color: #555; /* 入力背景色 */
+    background-clip: padding-box;
+    border: 1px solid #777; /* 入力ボーダー色 */
+    border-radius: .25rem;
+}
+.form-control-sm {
+    padding: .25rem .5rem;
+    font-size: .875rem;
+}
+#complete-save-btn {
+  display: block;
+  width: 80%;
+  margin: 2em auto 1em;
+  padding: 15px;
+  font-size: 1.2em;
+  border: none;
+  border-radius: 8px;
+  background: #7ab8ff; /* primary colorに合わせて調整 */
+  color: #333;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#complete-save-btn:hover {
+  background: #4b88cc;
+}
+
+/* --- 座席表関連のスタイル --- */
+
+.seat-map {
+  padding: 10px;
+  background: #444; 
+  color: white;
+  border-radius: 8px;
+  position: relative;
+}
+
+.seat-map-title {
+    text-align: center;
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 20px;
+    padding-top: 10px;
+}
+
+/*.exit-icon {
+    position: absolute;
+    top: 10px;
+    width: 50px;
+    height: 30px;
+    background: #008000;
+    border: 2px solid #fff;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 1.2em;
+    line-height: 28px;
+    text-align: center;
+    font-weight: bold;
+    z-index: 10;
+}
+.exit-left { left: 10px; } */ 
+
+
+.seat-map .row-row {
+  display: flex;
+  align-items: center; 
+  margin-bottom: 25px; 
+  gap: 10px; 
+}
+.seat-map .row-label {
+  width: 25px; 
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-right: 70px;
+}
+
+.seat-map .seat-boxes {
+  display: flex;
+  gap: 3px; 
+  flex-grow: 1; 
+  position: relative;
+}
+
+.seat-numbers-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7em;
+    color: #ccc;
+    padding: 0 4px; 
+    margin: 0 35px 5px 60px; 
+    height: 15px;
+    position: relative;
+}
+.seat-numbers-bottom {
+    top: unset;
+    bottom: -15px; 
+}
+
+.seat-numbers-top span {
+    position: absolute; 
+    top: 0;
+}
+.seat-number-3 { left: 56px; }
+.seat-number-10 { left: 270px; }
+.seat-number-14 { left: 395px; }
+
+.seat-map .seat-box {
+  width: 28px; 
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  background: #fff; 
+  border: none; 
+  border-radius: 6px; 
+  cursor: pointer;
+  color: transparent; 
+  font-size: 10px;
+  box-sizing: border-box;
+  transition: background 0.1s;
+}
+
+.seat-map .seat-box.cleaned {
+  background: #4CAF50; 
+  color: white;
+}
+
+.seat-map .seat-box.wheelchair {
+    background: transparent; 
+    border: 2px solid #fff; 
+    color: #fff;
+    font-size: 20px;
+    line-height: 22px;
+    width: 28px; 
+    height: 28px;
+    border-radius: 4px;
+}
+.seat-map .seat-box.wheelchair.cleaned {
+    background: #4CAF50; 
+    border-color: #4CAF50;
+}
+
+.cleaner-actions {
+    display: flex;
+    align-items: center; 
+    gap: 5px; 
+    width: 200px; 
+}
+.cleaner-actions .form-control-sm {
+    flex-grow: 1;
+}
+
+.seat-map .aisle {
+  width: 28px; 
+  height: 28px; 
+  margin: 0 0px; 
+  background: transparent; 
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+/* --- スクリーンごとの調整 --- */
+
+.body-screen-1 .seat-map .row-I .seat-boxes { margin-left: -60px; }
+.body-screen-2 .seat-map .row-I .seat-boxes { margin-left: -30px; }
+.body-screen-3 .seat-map .row-I .seat-boxes { margin-left: -30px; }
+.body-screen-4 .seat-map .row-K .seat-boxes { margin-left: -30px; }
+.body-screen-6 .seat-map .row-K .seat-boxes { margin-left: -30px; }
+
+.body-screen-7 .seat-map .seat-box,
+.body-screen-7 .seat-map .seat-box.wheelchair,
+.body-screen-7 .seat-map .aisle {
+  width: 20px; height: 20px; line-height: 20px;
+}
+.body-screen-7 .seat-map .seat-box.wheelchair { font-size: 14px; }
+
+.body-screen-9 .seat-map .seat-box,
+.body-screen-9 .seat-map .seat-box.wheelchair,
+.body-screen-9 .seat-map .aisle {
+  width: 20px; height: 20px; line-height: 20px;
+}
+.body-screen-9 .seat-map .seat-box.wheelchair { font-size: 14px; }
+
+.body-screen-5 .seat-map .seat-box,
+.body-screen-5 .seat-map .seat-box.wheelchair,
+.body-screen-5 .seat-map .aisle {
+  width: 20px; height: 20px; line-height: 20px;
+}
+.body-screen-5 .seat-map .seat-box.wheelchair { font-size: 15px; }
+
+.body-screen-5 .seat-map .row-row {
+  margin-bottom: 4px; 
+}
+
+.body-screen-10 .seat-map .seat-box,
+.body-screen-10 .seat-map .seat-box.wheelchair,
+.body-screen-10 .seat-map .aisle {
+  width: 20px; height: 20px; line-height: 20px;
+}
+.body-screen-10 .seat-map .seat-box.wheelchair { font-size: 15px; }
+
+.body-screen-10 .seat-map .row-row {
+  margin-bottom: 4px; 
+}
+
+
+/* 備考欄のレイアウト */
+#form-fields-left {
+    width: 500px;  
+    min-width: 300px; 
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; 
+}
+#form-fields-right {
+    flex: 1; 
+    min-width: 300px; 
+    display: flex;
+    flex-direction: column;
+}
+#form-fields-right textarea {
+    width: 100%;
+    height: 125px; 
+    resize: vertical; 
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #eee;
+    background-color: #555;
+    border: 1px solid #777;
+    border-radius: .25rem;
+    font-family: "Noto Sans JP", sans-serif; 
+}
+
+
+
+
+/* ▼▼▼ ★ ここから「印刷用スタイル」★ ▼▼▼ */
+@media print {
+
+  body, .container, .list-group-item, .showing-record {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 8pt !important; /* ★さらに小さく */
+    line-height: 1.2 !important; /* ★さらに詰める */
+  }
+  
+  h1, h2, h3, h4 {
+      color: #000 !important;
+      margin-top: 5px !important; /* ★余白を詰める */
+      margin-bottom: 2px !important; /* ★余白を詰める */
+  }
+  h4 { font-size: 10pt !important; } /* ★小さく */
+  h2 { font-size: 12pt !important; } /* ★小さく */
+  h3 { font-size: 11pt !important; } /* ★小さく */
+
+  /* 印刷に不要なUI要素をすべて非表示 */
+  #print-btn,
+  .btn[href="/"],
+  #dates-list-container,
+  .delete-showing-btn {
+    display: none !important;
+  }
+
+  .container {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .d-flex[style="gap: 20px;"] {
+    display: block !important;
+  }
+
+  div[style="flex-grow: 1;"] {
+    width: 100% !important;
+    flex-basis: auto !important;
+  }
+  
+  #day-detail {
+    border: none !important;
+    padding: 0 !important;
+  }
+
+  #day-detail h3 {
+      page-break-after: avoid !important;
+  }
+
+  .showing-record {
+    border: 1px solid #ccc !important;
+    border-left: 3px solid #ccc !important; /* ★左枠を細く */
+    page-break-inside: avoid !important; 
+    padding: 3px 8px !important; /* ★パディングを詰める */
+    margin-bottom: 3px !important; /* ★下の余白を詰める */
+  }
+  
+  .showing-record p, .showing-record ul {
+      margin-bottom: 2px !important; /* ★余白を詰める */
+      margin-top: 2px !important; /* ★余白を詰める */
+  }
+  .row-details-list {
+      padding-left: 10px !important; /* ★インデントを詰める */
+  }
+  .row-details-list li {
+      margin-bottom: 0 !important; /* ★リスト行間をなくす */
+  }
+  
+  hr {
+      border-top: 1px solid #ccc !important;
+      margin: 4px 0 !important; /* ★hrの余白を詰める */
+  }
+}
