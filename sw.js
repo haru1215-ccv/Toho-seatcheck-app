@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cleaning-app-cache-v3';
+const CACHE_NAME = 'cleaning-app-cache-v4';
 
 // オフラインで動作させるためにキャッシュするファイル
 // ★ スクリーンレイアウトJSONをすべてここに追加してください ★
@@ -69,4 +69,5 @@ self.addEventListener('fetch', (event) => {
   );
 
 });
+
 
