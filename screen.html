@@ -50,39 +50,50 @@
   </div>
 
   <script>
-    // 1. URLからスクリーンIDを取得 (e.g., screen.html?id=5)
+    // 1. URLからスクリーンIDを取得
     const urlParams = new URLSearchParams(window.location.search);
     const screenId = urlParams.get('id'); // "5"
     
-    // 2. タイトルとbodyクラスをセット
-    document.title = `SCREEN ${screenId}`;
-    document.getElementById('screen-id-title').innerText = screenId;
-    document.body.classList.add(`body-screen-${screenId}`);
-
-    // 3. 今日の日付をセット
-    document.getElementById('date-input').value = new Date().toISOString().split('T')[0];
-
-    // 4. script.js が必要とするグローバル変数を定義
+    // 2. グローバル変数を定義 (script.js がこれに依存する)
     let SEAT_STRUCTURE = {};
     let WHEELCHAIR_SEATS = {};
 
-    // 5. 必要なレイアウトJSONを読み込む
-    fetch(`screen_layouts/${screenId}.json`)
-      .then(res => res.json())
-      .then(layoutData => {
-        // 6. グローバル変数にセット
-        SEAT_STRUCTURE = layoutData.seat_structure;
-        WHEELCHAIR_SEATS = layoutData.wheelchair_seats;
+    // 3. ページが読み込まれたらレイアウトをフェッチ
+    document.addEventListener('DOMContentLoaded', () => {
+      // 3a. タイトルとbodyクラスをセット
+      document.title = `SCREEN ${screenId}`;
+      document.getElementById('screen-id-title').innerText = screenId;
+      document.body.classList.add(`body-screen-${screenId}`);
 
-        // 7. レイアウト読み込み完了後、メインのスクリプトを実行
-        const script = document.createElement('script');
-        script.src = 'static/script.js';
-        document.body.appendChild(script);
-      })
-      .catch(err => {
-        console.error('座席レイアウトの読み込みに失敗しました:', err);
-        alert('座席レイアウトの読み込みに失敗しました。');
-      });
+      // 3b. 今日の日付をセット
+      document.getElementById('date-input').value = new Date().toISOString().split('T')[0];
+
+      // 3c. 必要なレイアウトJSONを読み込む
+      fetch(`screen_layouts/${screenId}.json`)
+        .then(res => {
+            if (!res.ok) {
+                // オフラインキャッシュが見つからないか、サーバーエラー
+                throw new Error(`HTTP error! status: ${res.status} (screen_layouts/${screenId}.json)`);
+            }
+            return res.json();
+        })
+        .then(layoutData => {
+          // 3d. グローバル変数にセット
+          SEAT_STRUCTURE = layoutData.seat_structure;
+          WHEELCHAIR_SEATS = layoutData.wheelchair_seats;
+
+          // 3e. ★ レイアウト読み込み完了のカスタムイベントを発火
+          console.log('Layout loaded, dispatching layoutloaded event.');
+          document.dispatchEvent(new Event('layoutloaded'));
+        })
+        .catch(err => {
+          // 3f. ★ 致命的エラー
+          console.error('座席レイアウトの読み込みに失敗しました:', err);
+          alert(`致命的なエラー: 座席レイアウト(screen_layouts/${screenId}.json)の読み込みに失敗しました。\n\nWi-Fiに接続し、アプリを再インストール（ホーム画面から削除→再追加）してください。`);
+        });
+    });
   </script>
+  
+  <script src="static/script.js" defer></script>
   </body>
 </html>
