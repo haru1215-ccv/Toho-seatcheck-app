@@ -1,23 +1,23 @@
 // static/script.js
-document.addEventListener("DOMContentLoaded", () => {
+
   // screen.html 以外では実行しない
-  // (screen.html 側で screenId が定義されてから読み込まれる前提)
-  if (typeof screenId === "undefined") return; 
+  if (typeof screenId === "undefined") {
+      // console.log("screenId not found, script will not run.");
+      return; 
+  }
 
   const container = document.getElementById("current-showing");
   const completeSaveBtn = document.getElementById("complete-save-btn");
   const saveStatusEl = document.getElementById("save-status");
   const dateInput = document.getElementById("date-input");
   
-  // ▼▼▼ ★ 編集モード判定用の変数を追加 ▼▼▼
   const urlParams = new URLSearchParams(window.location.search);
   const editShowingId = urlParams.get('showing_id');
   const editDate = urlParams.get('date');
   let isEditMode = (editShowingId !== null);
-  // ▲▲▲ ★ 編集モード判定用の変数を追加 ▲▲▲
   
-  let currentShowing = null; // 現在編集中の上映回データ
-  let showings = []; // 読み込んだ全記録（保存用）
+  let currentShowing = null; 
+  let showings = []; 
 
   //--- ▼▼▼ iPadストレージ (localStorage) ヘルパー ▼▼▼ ---
   const DB_KEY = "myCleaningAppDatabase";
@@ -42,7 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
   
-  // 新しい上映回データを初期化
   const newShowing = () => {
     const s = { title: "", times: [], cleaner: "", overallRemark: "", rows: {} };
     s.id = Date.now().toString() + Math.random().toString(36).slice(2,10);
@@ -68,10 +67,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const dateToLoad = dateInput.value;
     
     const db = getDatabase();
-    // "2025-11-04_5" のようなキーで保存
     const key = `${dateToLoad}_${screenId}`;
     
-    // iPadに保存されたデータがなければ空の配列
     showings = db[key] || []; 
     
     if (isEditMode) {
@@ -106,18 +103,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const key = `${dateToSave}_${screenId}`;
       
       const db = getDatabase();
-      db[key] = showings; // その日付・スクリーンのデータで上書き
+      db[key] = showings; 
       saveDatabase(db);
       
       if (isEditMode) {
           showSaveStatus("iPadに保存しました！履歴ページに戻ります。");
           setTimeout(() => {
-              // 編集後は records.html に戻る
               window.location.href = 'records.html'; 
           }, 1000);
       } else {
           showSaveStatus("iPadに保存しました！画面をリセットします。");
-          // 新規入力のためリセット
           loadData(); 
       }
 
@@ -272,7 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         const placeholderText = "担当者名";
         let copyButtonHtml = '';
-        if (rowIndex < (allRowKeys.length - 1)) { 
+        if (rowIndex < (allRows.length - 1)) { 
             copyButtonHtml = `<button class="btn btn-sm btn-outline-secondary copy-cleaner-btn" data-row="${row}" title="下の担当者をコピー">↑</button>`;
         }
 
@@ -288,6 +283,4 @@ document.addEventListener("DOMContentLoaded", () => {
     return html;
   };
 
-  // 初期ロード
   loadData();
-});

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cleaning-app-cache-v1';
+const CACHE_NAME = 'cleaning-app-cache-v2';
 
 // オフラインで動作させるためにキャッシュするファイル
 // ★ スクリーンレイアウトJSONをすべてここに追加してください ★
