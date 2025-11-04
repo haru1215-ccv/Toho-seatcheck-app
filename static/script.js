@@ -1,8 +1,12 @@
 // static/script.js
 
+document.addEventListener('layoutloaded', () => {
+  console.log('layoutloaded event received, starting script.');
+
   // screen.html 以外では実行しない
+  // (screen.html が screenId をグローバルに定義する前提)
   if (typeof screenId === "undefined") {
-      // console.log("screenId not found, script will not run.");
+      console.error("screenId not found, script will not run.");
       return; 
   }
 
@@ -21,18 +25,10 @@
 
   //--- ▼▼▼ iPadストレージ (localStorage) ヘルパー ▼▼▼ ---
   const DB_KEY = "myCleaningAppDatabase";
-
-  const getDatabase = () => {
-    return JSON.parse(localStorage.getItem(DB_KEY) || "{}");
-  };
-
-  const saveDatabase = (db) => {
-    localStorage.setItem(DB_KEY, JSON.stringify(db));
-  };
+  const getDatabase = () => JSON.parse(localStorage.getItem(DB_KEY) || "{}");
+  const saveDatabase = (db) => localStorage.setItem(DB_KEY, JSON.stringify(db));
   //--- ▲▲▲ iPadストレージ (localStorage) ヘルパー ▲▲▲ ---
 
-
-  //--- ヘルパー関数 ---
   const showSaveStatus = (txt) => {
     saveStatusEl.innerText = txt;
     if (txt && txt !== "保存中...") {
@@ -57,8 +53,6 @@
   };
   
   //--- 処理ロジック ---
-
-  // データの読み込み (localStorage版)
   const loadData = () => {
     if (isEditMode && editDate) {
         dateInput.value = editDate;
@@ -86,7 +80,6 @@
     renderCurrentShowing();
   };
   
-  // 清掃完了ボタンが押されたときの処理 (localStorage版)
   const completeAndSave = () => {
     if (!currentShowing.title.trim() && !currentShowing.cleaner.trim()) {
         if (!confirm('作品名または担当者が入力されていませんが、保存しますか？')) return;
@@ -125,7 +118,6 @@
     }
   };
 
-  // 画面の単一フォームを描画
   const renderCurrentShowing = () => {
     const s = currentShowing;
     
@@ -166,7 +158,6 @@
     attachEventListeners();
   };
 
-  // イベントリスナーをアタッチ
   const attachEventListeners = () => {
       container.querySelectorAll("input[data-field], textarea[data-field]").forEach(inp => { 
         inp.addEventListener("input", e => {
@@ -231,7 +222,6 @@
       completeSaveBtn.addEventListener("click", completeAndSave);
   };
   
-  // 座席表のHTMLを生成
   const renderSeatMap = (rowsData) => {
     let html = '';
     html += `<div class="seat-map-title">SCREEN ${screenId}</div>`;
@@ -267,7 +257,7 @@
         
         const placeholderText = "担当者名";
         let copyButtonHtml = '';
-        if (rowIndex < (allRows.length - 1)) { 
+        if (rowIndex < (allRowKeys.length - 1)) { 
             copyButtonHtml = `<button class="btn btn-sm btn-outline-secondary copy-cleaner-btn" data-row="${row}" title="下の担当者をコピー">↑</button>`;
         }
 
@@ -284,3 +274,5 @@
   };
 
   loadData();
+
+});
