@@ -3,7 +3,6 @@ const CACHE_NAME = 'cleaning-app-cache-v3';
 // オフラインで動作させるためにキャッシュするファイル
 // ★ スクリーンレイアウトJSONをすべてここに追加してください ★
 const urlsToCache = [
-  '.',
   'index.html',
   'screen.html',
   'records.html',
@@ -70,3 +69,4 @@ self.addEventListener('fetch', (event) => {
   );
 
 });
+
