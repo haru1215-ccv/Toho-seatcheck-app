@@ -100,12 +100,12 @@ document.addEventListener('layoutloaded', () => {
       saveDatabase(db);
       
       if (isEditMode) {
-          showSaveStatus("iPadに保存しました！履歴ページに戻ります。");
+          showSaveStatus("保存しました！履歴ページに戻ります。");
           setTimeout(() => {
               window.location.href = 'records.html'; 
           }, 1000);
       } else {
-          showSaveStatus("iPadに保存しました！画面をリセットします。");
+          showSaveStatus("保存しました！画面をリセットします。");
           loadData(); 
       }
 
@@ -139,7 +139,7 @@ document.addEventListener('layoutloaded', () => {
             <input type="text" value="${(s.times||[]).join(", ")}" data-field="times" class="form-control" placeholder="開始時間を記入 例: 10:00">
           </label>
           <label class="d-block">清掃者名: 
-            <input type="text" value="${s.cleaner || ""}" data-field="cleaner" class="form-control" placeholder="例: 鈴木">
+            <input type="text" value="${s.cleaner || ""}" data-field="cleaner" class="form-control" placeholder="例: 東宝">
           </label>
         </div>
         <div id="form-fields-right">
@@ -276,3 +276,4 @@ document.addEventListener('layoutloaded', () => {
   loadData();
 
 });
+
