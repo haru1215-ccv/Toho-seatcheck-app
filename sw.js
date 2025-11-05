@@ -9,8 +9,6 @@ const urlsToCache = [
   'static/style.css',
   'static/script.js',
   'manifest.json',
-  'icon-192.png',
-  'icon-512.png',
   'screen_layouts/1.json',
   'screen_layouts/2.json',
   'screen_layouts/3.json',
@@ -69,5 +67,6 @@ self.addEventListener('fetch', (event) => {
   );
 
 });
+
 
 
