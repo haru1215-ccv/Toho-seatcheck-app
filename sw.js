@@ -9,6 +9,8 @@ const urlsToCache = [
   'static/style.css',
   'static/script.js',
   'manifest.json',
+  'image/icon-192.jpg',
+  'image/icon-512.jpg',
   'screen_layouts/1.json',
   'screen_layouts/2.json',
   'screen_layouts/3.json',
