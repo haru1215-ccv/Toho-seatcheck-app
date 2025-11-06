@@ -1,6 +1,6 @@
 {
   "name": "清掃管理",
-  "short_name": "清掃App",
+  "short_name": "清掃チェックアプリ",
   "description": "清掃管理アプリ",
   "start_url": "index.html",
   "display": "standalone",
@@ -20,3 +20,4 @@
   ]
 
 }
+
