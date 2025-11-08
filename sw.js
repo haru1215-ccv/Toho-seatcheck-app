@@ -6,6 +6,7 @@ const urlsToCache = [
   'index.html',
   'screen.html',
   'records.html',
+  'admin.html',
   'static/style.css',
   'static/script.js',
   'manifest.json',
@@ -69,11 +70,6 @@ self.addEventListener('fetch', (event) => {
   );
 
 });
-
-
-
-
-
 
 
 
