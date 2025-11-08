@@ -80,12 +80,12 @@
         
         const overallStatusHtml = isOverallCleaned ? '<p class="mb-2"><strong>ステータス: ✅ 清掃記録あり</strong></p>' : '';
         const overallRemarkHtml = overallRemark ? `<p class="mb-1 small"><strong>全体備考:</strong> ${overallRemark}</p>` : '';
-
-        // ▼▼▼ ここから変更 ▼▼▼
-        // MX情報のHTMLを生成
+        
+        // ▼▼▼ ここから変更（MX情報の表示ロジック） ▼▼▼
         let mxHtml = '';
         if (show.isMX) {
-            mxHtml = `<p class="mb-1 small" style="color:#FFD700; font-weight:bold;">
+            // ★ 色を #FFD700 (黄) から #00BFFF (水色) に変更 ★
+            mxHtml = `<p class="mb-1 small" style="color:#00BFFF; font-weight:bold;">
                         [MX] 洗濯ばさみ: ${show.mxClipCount || '0'} 個
                       </p>`;
         }
@@ -104,8 +104,8 @@
                 
                 ${overallRemarkHtml}
                 ${mxHtml} 
-                
                 ${overallStatusHtml}
+                
                 <ul class="row-details-list">${rowDetailsHtml}</ul>
             </div>
         `;
