@@ -510,20 +510,38 @@ hr { border-top: 1px solid #555; margin: 1.5rem 0; }
   border-radius: 50%;
 }
 input:checked + .mx-slider {
-  background-color: #FFD700; /* ON時の色 (MX) */
+  background-color: #00BFFF; /* ★ ON時の色 (水色っぽい青) ★ */
 }
 input:checked + .mx-slider:before {
   transform: translateX(26px);
 }
+/* ▲▲▲ MXトグルスイッチここまで ▲▲▲ */
 
+
+/* ▼▼▼ MX 洗濯ばさみ個数入力欄 ▼▼▼ */
 #mx-clip-count-wrapper {
   margin-top: 1rem;
   padding: 1rem;
-  background: #504e40; /* MX用の背景色 */
-  border: 1px solid #FFD700;
+  background: #3a4a5a; /* ★ MX用の背景色を青系に ★ */
+  border: 1px solid #00BFFF; /* ★ 枠線を水色っぽい青に ★ */
   border-radius: 8px;
 }
 #mx-clip-count-wrapper label {
   font-weight: bold;
-  color: #FFD700; /* MX用の文字色 */
+  color: #00BFFF; /* ★ MX用の文字色を水色っぽい青に ★ */
+  display: flex; /* これを追加してinputとラベルを横並びに */
+  align-items: center; /* 縦方向中央揃え */
+  gap: 10px; /* ラベルと入力欄の間のスペース */
 }
+#mx-clip-count-input {
+  width: 60px; /* ★ 2桁分の長さに調整 (例: 60px) ★ */
+  text-align: center; /* 入力文字を中央揃えに */
+  -moz-appearance: textfield; /* Firefoxでinput type="number"の矢印を非表示にする */
+}
+/* Chrome, Safari, Edge, Opera の input type="number" の矢印を非表示にする */
+#mx-clip-count-input::-webkit-outer-spin-button,
+#mx-clip-count-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* ▲▲▲ MX個数入力欄ここまで ▲▲▲ */
