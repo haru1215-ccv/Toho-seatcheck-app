@@ -81,6 +81,16 @@
         const overallStatusHtml = isOverallCleaned ? '<p class="mb-2"><strong>ステータス: ✅ 清掃記録あり</strong></p>' : '';
         const overallRemarkHtml = overallRemark ? `<p class="mb-1 small"><strong>全体備考:</strong> ${overallRemark}</p>` : '';
 
+        // ▼▼▼ ここから変更 ▼▼▼
+        // MX情報のHTMLを生成
+        let mxHtml = '';
+        if (show.isMX) {
+            mxHtml = `<p class="mb-1 small" style="color:#FFD700; font-weight:bold;">
+                        [MX] 洗濯ばさみ: ${show.mxClipCount || '0'} 個
+                      </p>`;
+        }
+        // ▲▲▲ ここまで変更 ▲▲▲
+
         return `
             <div class="showing-record mb-3 p-3">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -91,7 +101,11 @@
                     </div>
                 </div>
                 <p class="mb-1 small text-muted">時間: ${times} | 全体担当: ${overallCleaner}</p>
-                ${overallRemarkHtml} ${overallStatusHtml}
+                
+                ${overallRemarkHtml}
+                ${mxHtml} 
+                
+                ${overallStatusHtml}
                 <ul class="row-details-list">${rowDetailsHtml}</ul>
             </div>
         `;
