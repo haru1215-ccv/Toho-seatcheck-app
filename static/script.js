@@ -42,10 +42,8 @@ document.addEventListener('layoutloaded', () => {
     const s = { title: "", times: [], cleaner: "", overallRemark: "", rows: {} };
     s.id = Date.now().toString() + Math.random().toString(36).slice(2,10);
     
-    // ▼▼▼ ここから追加 ▼▼▼
-    s.isMX = false;       // MXモードかどうか (デフォルト: false)
-    s.mxClipCount = ""; // 洗濯ばさみ個数 (デフォルト: 空)
-    // ▲▲▲ ここまで追加 ▲▲▲
+    s.isMX = false;
+    s.mxClipCount = "";
     
     // SEAT_STRUCTURE は screen.html が読み込み済みの前提
     Object.entries(SEAT_STRUCTURE).forEach(([row, seatArray]) => {
@@ -77,6 +75,14 @@ document.addEventListener('layoutloaded', () => {
             isEditMode = false;
             dateInput.disabled = false;
             currentShowing = newShowing();
+        } else {
+            // 既存データにMXプロパティがない場合に備えてデフォルト値を追加
+            if (typeof currentShowing.isMX === 'undefined') {
+                currentShowing.isMX = false;
+            }
+            if (typeof currentShowing.mxClipCount === 'undefined') {
+                currentShowing.mxClipCount = "";
+            }
         }
     } else {
         currentShowing = newShowing();
@@ -86,9 +92,11 @@ document.addEventListener('layoutloaded', () => {
   };
   
   const completeAndSave = () => {
-    if (!currentShowing.title.trim() && !currentShowing.cleaner.trim()) {
-        if (!confirm('作品名または担当者が入力されていませんが、保存しますか？')) return;
+    // ▼▼▼ <select> になったので validation を変更 ▼▼▼
+    if (!currentShowing.title.trim()) {
+        if (!confirm('作品名が選択されていませんが、保存しますか？')) return;
     }
+    // ▲▲▲
     
     showSaveStatus("保存中...");
     
@@ -133,7 +141,17 @@ document.addEventListener('layoutloaded', () => {
         dateInput.addEventListener("change", loadData); 
     }
 
-    // ▼▼▼ ここから追加 ▼▼▼
+    // ▼▼▼ 1. 作品名リストをlocalStorageから読み込む ▼▼▼
+    const movieTitles = JSON.parse(localStorage.getItem("movieTitleMaster") || "[]");
+    let titleOptionsHtml = '<option value="">（作品名を選択）</option>';
+    
+    movieTitles.forEach(title => {
+      // 読み込んだデータ(s.title)と一致するものを選択済(selected)にする
+      const isSelected = (s.title === title) ? 'selected' : '';
+      titleOptionsHtml += `<option value="${title}" ${isSelected}>${title}</option>`;
+    });
+    // ▲▲▲ ここまで追加 ▲▲▲
+
     // スクリーン8専用のHTMLを生成
     let screen8Html = '';
     if (screenId === "8") {
@@ -155,20 +173,22 @@ document.addEventListener('layoutloaded', () => {
           </div>
           
           <div id="mx-clip-count-wrapper" style="${clipInputStyle}">
-            <label class="d-block">洗濯ばさみ個数:
-              <input type="number" id="mx-clip-count-input" value="${s.mxClipCount || ""}" class="form-control" placeholder="個数を入力">
+            <label>洗濯ばさみ個数:
+              <input type="number" id="mx-clip-count-input" value="${s.mxClipCount || ""}" class="form-control" placeholder="個数">
             </label>
           </div>
         `;
     }
-    // ▲▲▲ ここまで追加 ▲▲▲
 
+    // ▼▼▼ 2. container.innerHTML の中の「作品名」部分を <select> に変更 ▼▼▼
     container.innerHTML = `
       <h2>${isEditMode ? '清掃記録の編集' : '清掃記録の新規入力'}</h2>
       <div id="form-fields-container">
         <div id="form-fields-left">
           <label class="d-block">作品名: 
-            <input type="text" value="${s.title || ""}" data-field="title" class="form-control" placeholder="例: スパイファミリー">
+            <select data-field="title" class="form-control">
+              ${titleOptionsHtml}
+            </select>
           </label>
           <label class="d-block">時間: 
             <input type="text" value="${(s.times||[]).join(", ")}" data-field="times" class="form-control" placeholder="開始時間を記入 例: 10:00">
@@ -197,13 +217,15 @@ document.addEventListener('layoutloaded', () => {
   };
 
   const attachEventListeners = () => {
-      container.querySelectorAll("input[data-field], textarea[data-field]").forEach(inp => { 
-        inp.addEventListener("input", e => {
+      // ▼▼▼ 3. querySelectorAll に "select[data-field]" を追加 ▼▼▼
+      container.querySelectorAll("input[data-field], textarea[data-field], select[data-field]").forEach(inp => { 
+        inp.addEventListener("input", e => { // selectのchangeもinputイベントで拾えます
           const field = e.target.dataset.field;
           if (field === "times") currentShowing.times = e.target.value.split(",").map(t => t.trim()).filter(t => t);
           else currentShowing[field] = e.target.value;
         });
       });
+      // ▲▲▲
       
       container.querySelectorAll(".row-cleaner-input").forEach(inp => {
         inp.addEventListener("input", e => {
