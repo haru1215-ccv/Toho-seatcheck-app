@@ -461,3 +461,69 @@ hr { border-top: 1px solid #555; margin: 1.5rem 0; }
       margin: 4px 0 !important; /* ★hrの余白を詰める */
   }
 }
+
+/* ▼▼▼ スクリーン8 (MX) 用のトグルスイッチ ▼▼▼ */
+.mx-toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 1.5rem; /* 備考欄との間に余白 */
+}
+.mx-toggle-label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #ccc;
+  user-select: none;
+}
+.mx-toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+.mx-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.mx-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #666; /* OFF時の色 */
+  transition: .4s;
+  border-radius: 34px;
+}
+.mx-slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+input:checked + .mx-slider {
+  background-color: #FFD700; /* ON時の色 (MX) */
+}
+input:checked + .mx-slider:before {
+  transform: translateX(26px);
+}
+
+#mx-clip-count-wrapper {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #504e40; /* MX用の背景色 */
+  border: 1px solid #FFD700;
+  border-radius: 8px;
+}
+#mx-clip-count-wrapper label {
+  font-weight: bold;
+  color: #FFD700; /* MX用の文字色 */
+}

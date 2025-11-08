@@ -42,6 +42,11 @@ document.addEventListener('layoutloaded', () => {
     const s = { title: "", times: [], cleaner: "", overallRemark: "", rows: {} };
     s.id = Date.now().toString() + Math.random().toString(36).slice(2,10);
     
+    // ▼▼▼ ここから追加 ▼▼▼
+    s.isMX = false;       // MXモードかどうか (デフォルト: false)
+    s.mxClipCount = ""; // 洗濯ばさみ個数 (デフォルト: 空)
+    // ▲▲▲ ここまで追加 ▲▲▲
+    
     // SEAT_STRUCTURE は screen.html が読み込み済みの前提
     Object.entries(SEAT_STRUCTURE).forEach(([row, seatArray]) => {
       s.rows[row] = { 
@@ -128,6 +133,36 @@ document.addEventListener('layoutloaded', () => {
         dateInput.addEventListener("change", loadData); 
     }
 
+    // ▼▼▼ ここから追加 ▼▼▼
+    // スクリーン8専用のHTMLを生成
+    let screen8Html = '';
+    if (screenId === "8") {
+        const isChecked = s.isMX ? 'checked' : '';
+        const clipInputStyle = s.isMX ? 'display: block;' : 'display: none;';
+
+        screen8Html = `
+          <div class="mx-toggle-container">
+            <label class="mx-toggle-label" for="mx-toggle-switch">
+              通常
+            </label>
+            <label class="mx-toggle-switch">
+              <input type="checkbox" id="mx-toggle-switch" ${isChecked}>
+              <span class="mx-slider"></span>
+            </label>
+            <label class="mx-toggle-label" for="mx-toggle-switch">
+              MX
+            </label>
+          </div>
+          
+          <div id="mx-clip-count-wrapper" style="${clipInputStyle}">
+            <label class="d-block">洗濯ばさみ個数:
+              <input type="number" id="mx-clip-count-input" value="${s.mxClipCount || ""}" class="form-control" placeholder="個数を入力">
+            </label>
+          </div>
+        `;
+    }
+    // ▲▲▲ ここまで追加 ▲▲▲
+
     container.innerHTML = `
       <h2>${isEditMode ? '清掃記録の編集' : '清掃記録の新規入力'}</h2>
       <div id="form-fields-container">
@@ -146,6 +181,9 @@ document.addEventListener('layoutloaded', () => {
           <label class="d-block">備考欄:
             <textarea data-field="overallRemark" class="form-control" placeholder="備考欄 (例: 座席濡れ 等)">${s.overallRemark || ""}</textarea>
           </label>
+          
+          ${screen8Html}
+          
         </div>
       </div>
       <hr>
@@ -202,6 +240,31 @@ document.addEventListener('layoutloaded', () => {
             renderCurrentShowing();
         });
       });
+
+      // --- スクリーン8専用のリスナー ---
+      const mxToggle = container.querySelector("#mx-toggle-switch");
+      const clipInputWrapper = container.querySelector("#mx-clip-count-wrapper");
+      const clipInput = container.querySelector("#mx-clip-count-input");
+  
+      if (mxToggle && clipInputWrapper && clipInput) {
+        // MXトグルスイッチの処理
+        mxToggle.addEventListener("change", e => {
+          const isMX = e.target.checked;
+          currentShowing.isMX = isMX;
+          // MXがONなら個数入力欄を表示、OFFなら非表示
+          clipInputWrapper.style.display = isMX ? 'block' : 'none';
+          // OFFになったら個数をリセット
+          if (!isMX) {
+              currentShowing.mxClipCount = "";
+              clipInput.value = "";
+          }
+        });
+  
+        // 洗濯ばさみ個数の入力処理
+        clipInput.addEventListener("input", e => {
+          currentShowing.mxClipCount = e.target.value;
+        });
+      }
 
       container.querySelectorAll(".row-check-all-btn").forEach(btn => {
         btn.addEventListener("click", e => {
@@ -276,4 +339,3 @@ document.addEventListener('layoutloaded', () => {
   loadData();
 
 });
-
