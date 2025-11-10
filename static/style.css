@@ -95,6 +95,23 @@ hr { border-top: 1px solid #555; margin: 1.5rem 0; }
 .row-details-list li { margin-bottom: 3px; }
 
 /* --- screen.html の調整 --- */
+/* ★ 修正ポイント: h1が見切れるのを防ぐために、隣接要素とH1のレイアウトを調整 ★ */
+.d-flex.justify-content-between.align-items-center {
+    /* タイトルとボタンが折り返さないようにする */
+    flex-wrap: nowrap; 
+}
+.d-flex.justify-content-between.align-items-center h1 {
+    /* タイトルが長すぎる場合に縮小できるように設定 */
+    min-width: 0;
+    flex-shrink: 1; /* 縮小を許可 */
+    font-size: 2em; /* フォントサイズを少し小さく */
+    white-space: nowrap; /* 強制的に折り返しを禁止 */
+    margin-right: 10px; /* 右のボタンとの間にスペースを確保 */
+    text-align: left; /* 左寄せに戻す */
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
 #date-input-container {
     max-width: 400px; 
     margin-left: auto;
