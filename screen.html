@@ -58,40 +58,56 @@
     let SEAT_STRUCTURE = {};
     let WHEELCHAIR_SEATS = {};
 
-    // 3. ページが読み込まれたらレイアウトをフェッチ
-    document.addEventListener('DOMContentLoaded', () => {
-      // 3a. タイトルとbodyクラスをセット
-      document.title = `SCREEN ${screenId}`;
-      document.getElementById('screen-id-title').innerText = screenId;
-      document.body.classList.add(`body-screen-${screenId}`);
+    // 3. ページが読み込まれたらレイアウトを読み込む (XMLHttpRequestを使用)
+    function loadLayout() {
+        // 3a. タイトルとbodyクラスをセット
+        document.title = `SCREEN ${screenId}`;
+        document.getElementById('screen-id-title').innerText = screenId;
+        document.body.classList.add(`body-screen-${screenId}`);
 
-      // 3b. 今日の日付をセット
-      document.getElementById('date-input').value = new Date().toISOString().split('T')[0];
+        // 3b. 今日の日付をセット
+        // Date型の互換性を高めるため、toISOString().split('T')[0]を代替する
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        document.getElementById('date-input').value = `${yyyy}-${mm}-${dd}`;
 
-      // 3c. 必要なレイアウトJSONを読み込む
-      fetch(`screen_layouts/${screenId}.json`)
-        .then(res => {
-            if (!res.ok) {
-                // オフラインキャッシュが見つからないか、サーバーエラー
-                throw new Error(`HTTP error! status: ${res.status} (screen_layouts/${screenId}.json)`);
+        // 3c. XHR (XMLHttpRequest) で JSONを読み込む
+        const jsonPath = `screen_layouts/${screenId}.json`;
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', jsonPath, true); // 同期ではなく非同期で実行
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) { // リクエスト完了
+                if (xhr.status === 200) { // 成功
+                    try {
+                        const layoutData = JSON.parse(xhr.responseText);
+                        // 3d. グローバル変数にセット
+                        SEAT_STRUCTURE = layoutData.seat_structure;
+                        WHEELCHAIR_SEATS = layoutData.wheelchair_seats;
+
+                        // 3e. レイアウト読み込み完了のカスタムイベントを発火
+                        console.log('Layout loaded, dispatching layoutloaded event.');
+                        document.dispatchEvent(new Event('layoutloaded'));
+                    } catch (e) {
+                        console.error('JSONパースエラー:', e);
+                        alert(`致命的なエラー: 座席レイアウト(${jsonPath})のデータ形式が不正です。`);
+                    }
+                } else { // 失敗 (404 Not Foundなど)
+                    console.error('座席レイアウトの読み込みに失敗しました:', xhr.status, jsonPath);
+                    alert(`致命的なエラー: 座席レイアウト(${jsonPath})の読み込みに失敗しました。\n\nファイルがサーバーに正しく配置されているか確認し、Wi-Fiに接続してください。`);
+                }
             }
-            return res.json();
-        })
-        .then(layoutData => {
-          // 3d. グローバル変数にセット
-          SEAT_STRUCTURE = layoutData.seat_structure;
-          WHEELCHAIR_SEATS = layoutData.wheelchair_seats;
-
-          // 3e. ★ レイアウト読み込み完了のカスタムイベントを発火
-          console.log('Layout loaded, dispatching layoutloaded event.');
-          document.dispatchEvent(new Event('layoutloaded'));
-        })
-        .catch(err => {
-          // 3f. ★ 致命的エラー
-          console.error('座席レイアウトの読み込みに失敗しました:', err);
-          alert(`致命的なエラー: 座席レイアウト(screen_layouts/${screenId}.json)の読み込みに失敗しました。\n\nWi-Fiに接続し、アプリを再インストール（ホーム画面から削除→再追加）してください。`);
-        });
-    });
+        };
+        xhr.onerror = function() {
+            // ネットワークエラーなど
+            console.error('ネットワークエラーが発生しました。');
+            alert(`致命的なエラー: ネットワークエラーが発生しました。`);
+        };
+        xhr.send();
+    }
+    
+    document.addEventListener('DOMContentLoaded', loadLayout);
   </script>
   
   <script src="static/script.js" defer></script>
